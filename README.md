@@ -1,6 +1,6 @@
-# docker-wordpress-nginx
+# docker-wordpress
 
-A Dockerfile that installs the latest wordpress, nginx, php-apc and php-fpm.
+A Dockerfile that installs the latest wordpress, nginx, and php-fpm (based on Archlinux).
 
 NB: A big thanks to [jbfink](https://github.com/jbfink/docker-wordpress) who did most of the hard work on the wordpress parts!
 
@@ -9,9 +9,9 @@ You can check out his [Apache version here](https://github.com/jbfink/docker-wor
 ## Installation
 
 ```
-$ git clone https://github.com/eugeneware/docker-wordpress-nginx.git
+$ git clone https://github.com/dpaw2/docker-wordpress.git
 $ cd docker-wordpress-nginx
-$ sudo docker build -t="docker-wordpress-nginx" .
+$ sudo docker build -t wordpress .
 ```
 
 ## Usage

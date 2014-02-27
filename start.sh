@@ -1,8 +1,7 @@
 #!/bin/bash
 if [ ! -f /usr/share/nginx/www/wp-config.php ]; then
-  #mysql has to be started this way as it doesn't work to call from /etc/init.d
-  /usr/bin/mysqld_safe & 
-  sleep 10s
+  mysql_install_db --basedir=/usr --datadir=/var/lib/mysql && mysqld_safe --user=root &
+  sleep 5
   # Here we generate random passwords (thank you pwgen!). The first two are for mysql users, the last batch for random keys in wp-config.php
   WORDPRESS_DB="wordpress"
   MYSQL_PASSWORD=`pwgen -c -n -1 12`
@@ -28,7 +27,7 @@ if [ ! -f /usr/share/nginx/www/wp-config.php ]; then
   # Download nginx helper plugin
   curl -O `curl -i -s http://wordpress.org/plugins/nginx-helper/ | egrep -o "http://downloads.wordpress.org/plugin/[^']+"`
   unzip nginx-helper.*.zip -d /usr/share/nginx/www/wp-content/plugins
-  chown -R www-data:www-data /usr/share/nginx/www/wp-content/plugins/nginx-helper
+  chown -R http:http /usr/share/nginx/www
 
   # Activate nginx plugin and set up pretty permalink structure once logged in
   cat << ENDL >> /usr/share/nginx/www/wp-config.php
@@ -45,12 +44,10 @@ if ( count( \$plugins ) === 0 ) {
 }
 ENDL
 
-  chown www-data:www-data /usr/share/nginx/www/wp-config.php
-
   mysqladmin -u root password $MYSQL_PASSWORD 
   mysql -uroot -p$MYSQL_PASSWORD -e "CREATE DATABASE wordpress; GRANT ALL PRIVILEGES ON wordpress.* TO 'wordpress'@'localhost' IDENTIFIED BY '$WORDPRESS_PASSWORD'; FLUSH PRIVILEGES;"
   killall mysqld
 fi
 
 # start all the services
-/usr/local/bin/supervisord -n
+supervisord -n -c /etc/supervisord.conf
