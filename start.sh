@@ -1,6 +1,6 @@
 #!/bin/bash
 if [ ! -f /usr/share/nginx/www/wp-config.php ]; then
-  mysql_install_db --basedir=/usr --datadir=/var/lib/mysql && mysqld_safe --user=root &
+  mysql_install_db --basedir=/usr --datadir=/var/lib/mysql && chown -R mysql:mysql /var/lib/mysql && mysqld_safe --user=mysql &
   sleep 5
   # Here we generate random passwords (thank you pwgen!). The first two are for mysql users, the last batch for random keys in wp-config.php
   WORDPRESS_DB="wordpress"

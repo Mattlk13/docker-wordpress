@@ -1,8 +1,9 @@
 FROM base/arch
 MAINTAINER DPaW Applications <asi@dpaw.wa.gov.au>
 # Basic Requirements
+RUN chmod a+rx /
 RUN pacman -Syu --noconfirm base-devel archlinux-keyring
-RUN pacman -S --noconfirm mariadb mariadb-clients nginx php-fpm php-apcu pwgen git unzip procps-ng supervisor
+RUN pacman -S --noconfirm mariadb mariadb-clients nginx php-fpm php-apcu pwgen git unzip procps-ng strace supervisor
 
 # Wordpress Requirements
 RUN pacman -S --noconfirm php-gd php-intl php-pear php-mcrypt php-memcache php-pspell php-sqlite php-tidy php-xsl php-ldap imagemagick
