@@ -1,6 +1,7 @@
 #!/bin/bash
-if [ ! -f /usr/share/nginx/www/wp-config.php ]; then
-  mysql_install_db --basedir=/usr --datadir=/var/lib/mysql && chown -R mysql:mysql /var/lib/mysql && mysqld_safe --user=mysql &
+chmod a+rx /
+if [ ! -f /wordpress/wp-config.php ]; then
+  mysqld_safe --user=mysql &
   sleep 5
   # Here we generate random passwords (thank you pwgen!). The first two are for mysql users, the last batch for random keys in wp-config.php
   WORDPRESS_DB="wordpress"
@@ -22,15 +23,15 @@ if [ ! -f /usr/share/nginx/www/wp-config.php ]; then
   /'AUTH_SALT'/s/put your unique phrase here/`pwgen -c -n -1 65`/
   /'SECURE_AUTH_SALT'/s/put your unique phrase here/`pwgen -c -n -1 65`/
   /'LOGGED_IN_SALT'/s/put your unique phrase here/`pwgen -c -n -1 65`/
-  /'NONCE_SALT'/s/put your unique phrase here/`pwgen -c -n -1 65`/" /usr/share/nginx/www/wp-config-sample.php > /usr/share/nginx/www/wp-config.php
+  /'NONCE_SALT'/s/put your unique phrase here/`pwgen -c -n -1 65`/" /wordpress/wp-config-sample.php > /wordpress/wp-config.php
 
   # Download nginx helper plugin
   curl -O `curl -i -s http://wordpress.org/plugins/nginx-helper/ | egrep -o "http://downloads.wordpress.org/plugin/[^']+"`
-  unzip nginx-helper.*.zip -d /usr/share/nginx/www/wp-content/plugins
-  chown -R http:http /usr/share/nginx/www
+  unzip nginx-helper.*.zip -d /wordpress/wp-content/plugins
+  chown -R http:http /wordpress
 
   # Activate nginx plugin and set up pretty permalink structure once logged in
-  cat << ENDL >> /usr/share/nginx/www/wp-config.php
+  cat << ENDL >> /wordpress/wp-config.php
 \$plugins = get_option( 'active_plugins' );
 if ( count( \$plugins ) === 0 ) {
   require_once(ABSPATH .'/wp-admin/includes/plugin.php');
@@ -38,7 +39,7 @@ if ( count( \$plugins ) === 0 ) {
   \$pluginsToActivate = array( 'nginx-helper/nginx-helper.php' );
   foreach ( \$pluginsToActivate as \$plugin ) {
     if ( !in_array( \$plugin, \$plugins ) ) {
-      activate_plugin( '/usr/share/nginx/www/wp-content/plugins/' . \$plugin );
+      activate_plugin( '/wordpress/wp-content/plugins/' . \$plugin );
     }
   }
 }
@@ -50,4 +51,4 @@ ENDL
 fi
 
 # start all the services
-supervisord -n -c /etc/supervisord.conf
+supervisord -c /etc/supervisord.conf
